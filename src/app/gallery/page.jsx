@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import React from 'react';
 import './gallery.css'
-function page(props) {
+function Page(props) {
   return (
     <div>
       <table>
@@ -22,4 +22,4 @@ function page(props) {
   );
 }
 
-export default page;
+export default Page;
