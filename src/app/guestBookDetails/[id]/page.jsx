@@ -1,40 +1,62 @@
 "use client";
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import './guestBookDetails.css'
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import axios from 'axios';
+import { useEffect, useState } from "react";
+import './guestBookDetails.css';
 
 function Page({ params }) {
-  const { id } = params; // URL에서 넘어온 id
-  const [data, setData] = useState(null); // 초기값을 null로 설정
-  const API_URL = `/guestbook/detail?gb_idx=${id}`;
+  const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+  const [item, setItem] = useState(null); // 데이터 상태
+  const [loading, setLoading] = useState(true); // 로딩 상태
+  const [error, setError] = useState(null); // 에러 상태
 
-  const getData = async () => {
-    try {
-      const res = await axios.get(API_URL);
-      setData(res.data); // 데이터를 직접 상태에 저장
-    } catch (error) {
-      console.error("API 요청 중 에러 발생: ", error);
-    }
-  };
 
   // 컴포넌트 마운트 시 한 번 실행
   useEffect(() => {
-    getData();
-  }, []);
-  
-  if (!data) {
-    return <div>Loading...</div>;
+    const fetchData = async () => {
+      try {
+        setLoading(true); // 로딩 시작
+        // params 언래핑: Promise로 감싸진 값을 꺼내는 과정
+        // Promise.resolve(params)의 역할
+        // Promise.resolve()는 전달된 값을 Promise 객체로 변환합니다.
+        // 만약 params가 이미 Promise라면, 원래 Promise를 반환합니다.
+        // 만약 params가 일반 객체라면, 이를 즉시 해결된(resolved) Promise로 감쌉니다.
+        // Promise인지 아닌지 신경 쓰지 않고 항상 비동기적으로 다룰 수 있습니다.
+        // const resolvedParams = await Promise.resolve(params); // params 언래핑
+        // const { id } = resolvedParams; // id 추출
+        const { id } = await Promise.resolve(params);
+        const API_URL = `${LOCAL_API_BASE_URL}/guestbook/detail?gb_idx=${id}`;
+        console.log("API URL:", API_URL); // 디버깅용
+
+        // 데이터 가져오기
+        const response = await axios.get(API_URL);
+        setItem(response.data);
+      } catch (err) {
+        console.error("Error fetching product data:", err);
+        setError("Failed to fetch product data.");
+      } finally {
+        setLoading(false); // 로딩 종료
+      }
+    };
+
+    fetchData();
+  }, [params, LOCAL_API_BASE_URL]);
+
+  // 로딩 중
+  if (loading) {
+    return <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>;
   }
 
+  // 에러 발생 시
+  if (error) {
+    return (
+      <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
+        <h2>Error:</h2>
+        <p>{error}</p>
+      </div>
+    );
+  }
+ //로딩 완료 후  
   return (
     <>
       <h2 className="title">GuestBookDetail</h2>
@@ -54,13 +76,13 @@ function Page({ params }) {
           <TableBody>
             {/* 단일 데이터 렌더링 */}
             <TableRow>
-              <TableCell className="table-cell">{data.gb_idx}</TableCell>
-              <TableCell className="table-cell">{data.gb_name}</TableCell>
-              <TableCell className="table-cell">{data.gb_subject}</TableCell>
-              <TableCell className="table-cell">{data.gb_content}</TableCell>
-              <TableCell className="table-cell">{data.gb_email}</TableCell>
-              <TableCell className="table-cell">{data.gb_pw}</TableCell>
-              <TableCell className="table-cell">{data.gb_regdate}</TableCell>
+              <TableCell className="table-cell">{item.gb_idx}</TableCell>
+              <TableCell className="table-cell">{item.gb_name}</TableCell>
+              <TableCell className="table-cell">{item.gb_subject}</TableCell>
+              <TableCell className="table-cell">{item.gb_content}</TableCell>
+              <TableCell className="table-cell">{item.gb_email}</TableCell>
+              <TableCell className="table-cell">{item.gb_pw}</TableCell>
+              <TableCell className="table-cell">{item.gb_regdate}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
