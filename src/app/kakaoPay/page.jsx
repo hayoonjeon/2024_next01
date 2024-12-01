@@ -11,21 +11,23 @@ const KakaoPay = () => {
   const handlePayment = async () => {
     try {
       const quantity = 2; // 수량
-      const pricePerItem = 2200; // 상품 단가
-      const totalAmount = quantity * pricePerItem; // 수량결제 해결
+    const pricePerItem = 2200; // 상품 단가
+    const totalAmount = quantity * pricePerItem; // 총 금액
 
-      const response = await axios.post("/api/kakaoPay", {
-        cid: "TC0ONETIME",
-        partner_order_id: "partner_order_id",
-        partner_user_id: "partner_user_id",
-        item_name: "초코파이",
-        quantity: quantity,
-        total_amount: totalAmount, // 계산된 총 금액
-        vat_amount: Math.floor(totalAmount * 0.1), // 부가세 계산 (예: 10%)
-        tax_free_amount: 0,
-        approval_url: "http://localhost:3000/kakaoPay/success",
-        fail_url: "http://localhost:3000/kakaoPay/fail",
-        cancel_url: "http://localhost:3000/kakaoPay/cancel",
+    const vatAmount = Math.floor(totalAmount / 1.1 * 0.1); // 부가세 계산
+
+    const response = await axios.post("/api/kakaoPay", {
+      cid: "TC0ONETIME",
+      partner_order_id: "partner_order_id",
+      partner_user_id: "partner_user_id",
+      item_name: "초코파이",
+      quantity: quantity,
+      total_amount: totalAmount, // 계산된 총 금액
+      vat_amount: vatAmount, // 부가세 계산
+      tax_free_amount: totalAmount - vatAmount, // 면세 금액
+      approval_url: "http://localhost:3000/kakaoPay/success",
+      fail_url: "http://localhost:3000/kakaoPay/fail",
+      cancel_url: "http://localhost:3000/kakaoPay/cancel",
       });
 
       console.log(response.data);
