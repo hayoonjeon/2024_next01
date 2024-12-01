@@ -5,26 +5,48 @@ import { Divider, Grid2 } from '@mui/material';
 import axios from 'axios';
 import Link from 'next/link';
 
-function Page(props) {
-  const [list, setList] = useState([]);
+function Page({params}) {
+  const MAKEUP_API_BASE_URL = process.env.NEXT_PUBLIC_MAKEUP_API_BASE_URL;
+  const [list, setList] = useState([]);//상품목록
+  const [loading,setLoading] = useState(true);
+  const [error,setError]=useState(null);
   //const API_URL = "http://makeup-api.herokuapp.com/api/v1/products.json?brand=maybelline";
-  const API_URL = "/makeup/v1/products.json?brand=maybelline"
-  const getData = () => {
-    axios.get(
-      API_URL
-    )
-      .then(res => {
-        console.log(res.data)
-        setList(res.data.slice(0,12));
-      })
-      .catch(
-        console.log("에러발생")
-      )
+  const API_URL = `${MAKEUP_API_BASE_URL}/v1/products.json?brand=maybelline`;
+
+
+  //데이터 가져오기
+  const getData = async() => {
+    try {
+      setLoading(true);
+      const response=await axios.get(API_URL);
+      setList(response.data.slice(0,12));
+    } catch (err) {
+      console.error("Error Fetching data:",err)
+      setError(err.message);
+    }finally{
+      setLoading(false);  //로딩종료
+    }
+
   }
-  //최초 1번만 실행
   useEffect(() => {
-    getData();
-  }, [])
+      getData();
+  },[]);
+
+  // 로딩 중
+  if (loading) {
+    return <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>;
+  }
+
+  // 에러 발생 시
+  if (error) {
+    return (
+      <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
+        <h2>Error:</h2>
+        <p>{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div style={{ width: "80%", margin: "auto", padding: "20px" }}>
       <h2>베스트 상품</h2>
