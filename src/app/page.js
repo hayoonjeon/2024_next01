@@ -8,14 +8,17 @@ import img01 from "/public/images/tree-1.jpg"
 
 
 //자식컴포넌트
+import ItemList from './itemList/page'
+
 export default function Home() {
   return (
     //해당 내용은 부모컴포넌트의 props=>{children}에 삽입됨
     <>
-    <h1>WelCome</h1>
+ 
     {/* 이미지 자체를 import하지 않으면 너비와 높이 넣어줘야함 */}
     {/* <p><Image src="/images/coffee-blue.jpg" width={300} height={300} alt=""/></p>
     <p><Image src={img01}  width={300} height={300}  alt=""/></p> */}
+    <ItemList/>
     </>
   );
 }
