@@ -21,7 +21,7 @@ function Page(props) {
             const response = await axios.get(API_URL); // axios를 사용한 API 호출
             const data = response.data.data;
             setList(data);
-            // setList([]);
+            // setList([]); // 없을떄 연습
         } catch (err) {
             console.error("Error fetching data:", err);
             setError(err.message);
