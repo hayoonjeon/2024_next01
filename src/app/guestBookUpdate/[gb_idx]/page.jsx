@@ -7,8 +7,8 @@ import useAuthStore from '../../../../store/authStore';
 
 function Page({ params }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-  const router = useRouter();
   const { isAuthenticated, token } = useAuthStore();
+  const router = useRouter();
   const [originalData, setOriginalData] = useState(null);
   const [editData, setEditData] = useState({});
   const [loading, setLoading] = useState(true); // 로딩 상태

@@ -1,13 +1,15 @@
 "use client"
 
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import './guestBookList.css';
+import useAuthStore from '../../../store/authStore';
 
 function Page(props) {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
+    const { isAuthenticated, token } = useAuthStore();
     const [list, setList] = useState([]);
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [error, setError] = useState(null); // 에러 상태
@@ -47,6 +49,14 @@ function Page(props) {
     return (
         <>
             <h2 className="title">GuestBookList</h2>
+            {/* 로그인된상태면 쓰기버튼 표시 */}
+            {isAuthenticated && (
+                <div style={{textAlign:"right",marginRight:"250px"}}>
+                    <Button variant='contained' color='primary'>
+                    <Link href="/guestBookWrite" style={{color:"white"}}>쓰기</Link>
+                    </Button>
+                </div>
+            )}
             <TableContainer component={Paper} className="table-container">
                 <Table className="custom-table">
                     <TableHead>
