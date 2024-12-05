@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 
 function Page({ params }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+  const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
   const [item, setItem] = useState(null); // 데이터 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
@@ -121,20 +122,46 @@ function Page({ params }) {
             </TableRow>
             <TableRow>
               <TableCell className="table-header">내용</TableCell>
-              <TableCell className="table-cell">{item.gb_content}</TableCell>
+              {/* 줄바꿈 기억 :  <pre> 태그  */}
+              <TableCell className="table-cell"><pre>{item.gb_content}</pre></TableCell>   
             </TableRow>
             <TableRow>
               <TableCell className="table-header">이메일</TableCell>
               <TableCell className="table-cell">{item.gb_email}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="table-header">비밀번호</TableCell>
-              <TableCell className="table-cell">{item.gb_pw}</TableCell>
-            </TableRow>
-            <TableRow>
               <TableCell className="table-header">날짜</TableCell>
               <TableCell className="table-cell">{item.gb_regdate.substring(0, 10)}</TableCell>
             </TableRow>
+            {item.gb_filename && (
+              <TableRow>
+                <TableCell className="table-header">Image</TableCell>
+                <TableCell className="table-cell">
+                  {isAuthenticated ? (
+                    <a
+                      href={`${LOCAL_API_BASE_URL}/guestbook/download/${item.gb_filename}`} // Spring Boot 다운로드 링크
+                      download={item.gb_filename} // 다운로드 파일 이름 지정
+                      target="_blank" // 새 창에서 오픈
+                      rel="noopener noreferrer" // 보안 향상을 위해 추가
+                    >
+                      <img
+                        src={`${LOCAL_IMG_URL}/${item.gb_filename}`}
+                        alt="Uploaded Image"
+                        style={{ width: "150px" }}
+                      />
+                    </a>
+                  ) : (
+                    <img
+                      src={`${LOCAL_IMG_URL}/${item.gb_filename}`}
+                      alt="Uploaded Image"
+                      style={{ width: "150px" }}
+                    />
+                  )}
+
+                </TableCell>
+              </TableRow>
+
+            )}
           </TableBody>
         </Table>
       </TableContainer>
